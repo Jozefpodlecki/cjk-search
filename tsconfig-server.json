@@ -1,0 +1,26 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "baseUrl": "src/server",
+        "outFile": "server.js",
+        "sourceMap": true,
+        "noImplicitAny": true,
+        "module": "System",
+        "target": "ES2017",
+        "lib": [
+            "ES2015",
+            "ES2017",
+            "DOM"
+        ],
+        "moduleResolution": "Node",
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "incremental": true
+    },
+    "exclude": [
+        "src/client",
+        "node_modules",
+    ]
+}
