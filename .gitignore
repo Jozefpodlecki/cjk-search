@@ -2,7 +2,8 @@ node_modules
 src/server/controllers/*.js
 src/server/models/*.js
 src/server/routes/*.js
-public/*.css
+public/
+dist/
 server.js
 *.js
 *.js.map

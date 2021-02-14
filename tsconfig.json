@@ -1,7 +1,15 @@
 {
     "compilerOptions": {
+      "baseUrl": "src/client",
       "noImplicitAny": true,
-      "strictNullChecks": true
+      "strictNullChecks": true,
+      "jsx": "react",
+      "esModuleInterop": true,
+      "experimentalDecorators": true,
+      "sourceMap": true,
+      "resolveJsonModule": true,
+      "moduleResolution": "Node",
+      "target": "ES2017"
     },
     "include": [
       "src"

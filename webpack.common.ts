@@ -12,7 +12,7 @@ const config: Configuration = {
         app: "./src/client/index.tsx",
     },
     output: {
-        path: resolve(__dirname, "build"),
+        path: resolve(__dirname, "public"),
         publicPath: "/",
         filename: "[name].bundle.js"
     },

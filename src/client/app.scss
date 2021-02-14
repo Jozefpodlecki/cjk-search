@@ -1,0 +1,24 @@
+.canvas {
+    cursor: pointer;
+}
+
+.test {
+    font-family: 'ZCOOL KuaiLe', cursive;
+    font-family: 'Noto Sans JP', sans-serif;
+}
+
+.actions {
+    display: flex;
+}
+
+.icon {
+    margin: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}

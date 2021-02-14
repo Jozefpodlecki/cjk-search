@@ -1,0 +1,99 @@
+.radicalsFinder {
+    display: flex;
+    flex: 1;
+}
+
+.radicalsPanel {
+    flex: 0 0 auto;
+    padding: 10px;
+}
+
+.list {
+    display: grid;
+    grid-template-columns: repeat(6, 46px);
+    justify-items: center;
+    align-items: center;
+    overflow-x: hidden;
+    max-height: 85vh;
+    padding-right: 10px;
+
+    &::-webkit-scrollbar {
+        width: 10px;
+    }
+    
+    &::-webkit-scrollbar-track {
+        background: #f1f1f1; 
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        background: #888; 
+    }
+    
+    &::-webkit-scrollbar-thumb:hover {
+        background: #555; 
+    }
+}
+
+.radical {
+    cursor: pointer;
+    padding: 10px;
+    font-size: 20px;
+    transition: color .3s, background-color .3s;
+    user-select: none;
+
+    &.selected, &:hover {
+        background-color: black;
+        color: white;
+    }
+}
+
+.charactersPanel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.characters {
+    flex: 1;
+    width: 100%;
+}
+
+.character {
+    font-size: 100px;
+    padding: 10px;
+    text-decoration: none;
+    color: black;
+}
+
+.iconButton, .filterButton {
+    cursor: pointer;
+}
+
+.filterButton {
+    margin-left: 10px;
+}
+
+.input {
+    padding: 10px;
+    border: none;
+    border-bottom: 1px solid gray;
+    width: 100%;
+
+    &:focus {
+        outline: none;
+    }
+}
+
+.iconButton {
+    padding: 10px;
+}
+
+.searchPanel, .pagination {
+    display: flex;
+}
+
+.searchPanel {
+    align-items: center;
+    margin-bottom: 10px;
+}
