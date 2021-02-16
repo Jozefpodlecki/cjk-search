@@ -1,5 +1,5 @@
 import { getCharacters } from "api";
-import React, { FunctionComponent, useEffect, useRef, MouseEvent, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import MultiCodeSelect from "./MultiCodeSelect";
 import styles from "./multiCornerFinder.scss";
 
@@ -8,15 +8,18 @@ const allNumbers = Array(10).fill(0).map((pr, index) => index);
 type State = {
     selected: Record<number, number>;
     disabled: Record<number, number[]>;
+    characters: string[];
 }
 
 const MultiCornerFinder: FunctionComponent = () => {
     const [{
         selected,
         disabled,
+        characters,
     }, setState] = useState<State>({
         selected: {},
-        disabled: {}
+        disabled: {},
+        characters: [],
     });
 
     useEffect(() => {
@@ -64,20 +67,39 @@ const MultiCornerFinder: FunctionComponent = () => {
     }
  
     return <div className={styles.multiCornerFinder}>
-        <MultiCodeSelect
-            index={0}
-            selected={selected[0]}
-            disabled={disabled[0]}
-            onClick={onClick}/>
-        <MultiCodeSelect
-            index={1}
-            selected={selected[1]}
-            disabled={disabled[1]}
-            onClick={onClick}/>
-        {/* <MultiCodeSelect index=(1) selected={} onClick={onClick}/>
-        <MultiCodeSelect index=(2) selected={} onClick={onClick}/>
-        <MultiCodeSelect index=(3) selected={} onClick={onClick}/>
-        <MultiCodeSelect index=(4) selected={} onClick={onClick}/> */}
+        <div className={styles.grid}>
+            <MultiCodeSelect
+                index={0}
+                selected={selected[0]}
+                disabled={disabled[0]}
+                onClick={onClick}/>
+            <div className={styles.verticalBeam}></div>
+            <MultiCodeSelect
+                index={1}
+                selected={selected[1]}
+                disabled={disabled[1]}
+                onClick={onClick}/>
+            <div className={styles.horizontalBeam}></div>
+            <MultiCodeSelect
+                index={2}
+                selected={selected[2]}
+                disabled={disabled[2]}
+                onClick={onClick}/>
+            <div className={styles.verticalBeam}></div>
+            <MultiCodeSelect
+                index={3}
+                selected={selected[3]}
+                disabled={disabled[3]}
+                onClick={onClick}/>
+            <MultiCodeSelect
+                index={4}
+                selected={selected[4]}
+                disabled={disabled[4]}
+                onClick={onClick}/>
+        </div>
+       <div>
+           {<div></div>}
+       </div>
     </div>
 }
 

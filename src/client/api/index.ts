@@ -11,11 +11,29 @@ type SearchCriteria = {
     strokes?: Position[][];
     stroke?: Position[];
     radicals?: string[];
-    fourCode: string;
+    fourCode: Record<number, number>;
     strokeCount?: number;
     page: number;
     pageSize: number;
 }
+
+const importAsserts = (context: __WebpackModuleApi.RequireContext, func: (module: any) => any) => {
+    return context.keys()
+        .reduce((acc, key) => {
+            const module = context(key);
+            
+            acc[key] = func(module);
+
+            return acc;
+        }, {} as Record<string, string>);
+};
+
+export const charStrokeDictionary = importAsserts(require.context(
+    "../assets",
+    false,
+    /\.(png|gif|jpe?g|svg)$/,
+    "sync"
+), pr => pr.default);
 
 export const getCharacters = async (criteria: SearchCriteria): Promise<string[]> => {
     // const formData = new FormData();

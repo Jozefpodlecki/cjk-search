@@ -7,4 +7,31 @@
 
 .text {
     font-size: 150px;
+    display: flex;
+    justify-content: center;
+}
+
+.text, .imageWrapper {
+    width: 200px;
+}
+
+.image {
+    width: 100%;
+}
+
+.iconButton {
+    cursor: pointer;
+}
+
+.header {
+    margin-top: 10px;
+}
+
+.radical {
+    padding: 10px;
+    text-align: center;
+}
+
+.radicalValue {
+    font-size: 40px;
 }

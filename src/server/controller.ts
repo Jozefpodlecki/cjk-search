@@ -2,7 +2,7 @@ import { JsonController, Param, Body, Get, Post, Put, Delete } from "routing-con
 import _characters from "./characters.json";
 import _radicals_hanzi_map from "./radicals_hanzi_map.json";
 import _radicals from "./radicals.json";
-import _four_code from "./four_code.json";
+import _four_corner from "./four_corner.json";
 
 type SearchCriteria = {
     radicals?: string[];
@@ -67,11 +67,15 @@ export class Controller {
 
         if(criteria.fourCorner) {
 
-            _four_code.map(pr => pr)
+            criteria.fourCorner
+
+
+            const result = _four_corner
+                .filter(pr => pr.fourCorner)
 
             //const characters = _characters.filter(pr => pr.fourCorner && pr.fourCorner.includes(criteria.fourCorner));
 
-            return characters;
+            return result;
         }
   
     }
