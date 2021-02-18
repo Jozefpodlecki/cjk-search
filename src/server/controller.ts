@@ -3,9 +3,13 @@ import _characters from "./characters.json";
 import _radicals_hanzi_map from "./radicals_hanzi_map.json";
 import _radicals from "./radicals.json";
 import _four_corner from "./four_corner.json";
+import { Position } from "../client/models/Position";
 
 type SearchCriteria = {
     radicals?: string[];
+    strokes?: Position[][];
+    strokeCount?: number;
+    image?: string;
     fourCorner?: Record<number, number>;
     page: number;
     pageSize: number;
@@ -25,6 +29,8 @@ export class Controller {
     @Get("/api/character/:id")
     getCharacter(@Param('id') id: string) {
         const character = _characters.find(pr => pr.value === id);
+
+        console.log(character);
 
         return character;
     }
@@ -62,6 +68,24 @@ export class Controller {
             const offset = page * pageSize;
             characters = characters.slice(offset, pageSize);
             
+            return characters;
+        }
+
+        if(criteria.strokes) {
+
+            return [];
+        }
+
+        if(criteria.image) {
+
+            return [];
+        }
+
+        if(criteria.strokeCount) {
+
+            const characters = _characters
+                .filter(pr => pr.strokeCount === criteria.strokeCount);
+
             return characters;
         }
 

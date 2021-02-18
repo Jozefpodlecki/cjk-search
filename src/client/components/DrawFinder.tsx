@@ -4,12 +4,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "./drawFinder.scss";
 import { downloadURI } from "utils";
 import { Position } from "models/Position";
+import { getCharacters } from "api";
+import { useTransition, animated } from "react-spring";
+import { getHLCharacters } from "api/hanziLookup";
+
 
 type State = {
     isDrawing: boolean;
     strokeCount: number;
     strokes: Position[][];
     stroke: Position[];
+    results: string[];
 }
 
 const DrawFinder: FunctionComponent = () => {
@@ -21,11 +26,13 @@ const DrawFinder: FunctionComponent = () => {
         strokeCount,
         stroke,
         strokes,
+        results,
     }, setState] = useState<State>({
         isDrawing: false,
         strokeCount: 0,
         strokes: [],
         stroke: [],
+        results: [],
     });
 
     useEffect(() => {
@@ -43,7 +50,41 @@ const DrawFinder: FunctionComponent = () => {
 
         contextRef.current = context;
 
-    }, [strokeCount])
+    }, [])
+
+    useEffect(() => {
+
+        if(isDrawing || !canvasRef.current || !strokes.length) {
+            return
+        }
+
+        const canvas = canvasRef.current;
+        const dataUrl = canvas.toDataURL();
+
+        const _strokes = strokes.map(pr => pr.map(({x,y}) => [x,y]));
+
+        getHLCharacters(_strokes, 30)
+            .then(result => {
+                setState(state=> ({
+                    ...state,
+                    results: result.map(pr => pr.hanzi),
+                }));
+            })
+
+        // getCharacters({
+        //     image: dataUrl,
+        //     strokes,
+        //     strokeCount,
+        //     page: 0,
+        //     pageSize: 10,
+        // }).then(pr => {
+        //     setState(state=> ({
+        //         ...state,
+        //         results: pr,
+        //     }));
+        // })
+
+    }, [isDrawing, strokes, strokeCount]);
 
     const getPosition = (event: MouseEvent) => {
         const { clientX, clientY } = event;
@@ -169,25 +210,34 @@ const DrawFinder: FunctionComponent = () => {
         downloadURI(dataUri, "image.png");
     }
 
-    return <div>
-         <canvas width="500" height="500"
-            onContextMenu={onContextMenu}
-            onMouseDown={onMouseDown}
-            onMouseUp={onMouseUp}
-            onMouseMove={onMouseMove}
-            className={styles.canvas} ref={canvasRef}/>
-        {strokeCount ? <div className={styles.actions}>
-            <div className={styles.icon} onClick={onRemove}>
-                <FontAwesomeIcon icon={faTimes}/>
-            </div>
-            <div className={styles.icon} onClick={onUndo}>
-                <FontAwesomeIcon icon={faUndo}/>
-            </div>
-            <div className={styles.icon} onClick={onDownload}>
-                <FontAwesomeIcon icon={faDownload}/>
-            </div>
-        </div> : null}
-     
+    return <div className={styles.container}>
+        <div className={styles.canvasWrapper}>
+            <canvas width="500" height="500"
+                onContextMenu={onContextMenu}
+                onMouseDown={onMouseDown}
+                onMouseUp={onMouseUp}
+                onMouseMove={onMouseMove}
+                className={styles.canvas} ref={canvasRef}/>
+            {strokeCount ? <div className={styles.actions}>
+                <div className={styles.icon} onClick={onRemove}>
+                    <FontAwesomeIcon icon={faTimes}/>
+                </div>
+                <div className={styles.icon} onClick={onUndo}>
+                    <FontAwesomeIcon icon={faUndo}/>
+                </div>
+                <div className={styles.icon} onClick={onDownload}>
+                    <FontAwesomeIcon icon={faDownload}/>
+                </div>
+            </div> : null}
+        </div>
+       
+        <div className={styles.list}>
+            {results.map(pr => <animated.div
+                className={styles.item}
+                key={pr}>
+                {pr}
+            </animated.div>)}
+        </div>
     </div>;
 }
 

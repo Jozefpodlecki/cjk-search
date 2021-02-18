@@ -12,6 +12,7 @@ type RouteParam = {
 type State = {
     isLoading: boolean;
     showStrokeOrder: boolean;
+    hasStrokeOrder: boolean;
     value: string;
     meanings: string[];
     radicals: {
@@ -24,11 +25,13 @@ type State = {
 const CharacterInfo: FunctionComponent = () => {
     const [{
         showStrokeOrder,
+        hasStrokeOrder,
         value,
         meanings,
         radicals,
     }, setState] = useState<State>({
         isLoading: true,
+        hasStrokeOrder: false,
         showStrokeOrder: false,
         value: "",
         meanings: [],
@@ -65,9 +68,9 @@ const CharacterInfo: FunctionComponent = () => {
                 <div className={styles.text}>{value}</div>
             </div>}
             <div>
-                <div className={styles.iconButton} onClick={onStrokeShow}>
+                {hasStrokeOrder ? <div className={styles.iconButton} onClick={onStrokeShow}>
                     <FontAwesomeIcon icon={faPencilAlt}/>
-                </div>
+                </div> : null}
             </div>
             {meanings.length ? <>
                 <div className={styles.header}>Meanings</div>

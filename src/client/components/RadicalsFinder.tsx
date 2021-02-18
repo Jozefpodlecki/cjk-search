@@ -28,10 +28,10 @@ const RadicalsFinder: FunctionComponent = () => {
         characters: [],
         page: 0,
     });
-    const transitions = useTransition(characters, null, {
+    const transitions = useTransition(characters, {
         from: { opacity: 0 },
         enter: { opacity: 1 },
-        leave: item => async (next: any,) => {
+        leave: () => async (next: any) => {
             await next({opacity: 0});
             await next({display: "none"});
         },
@@ -145,11 +145,10 @@ const RadicalsFinder: FunctionComponent = () => {
                 </div>
             </div>
             <div className={styles.characters}>
-                {transitions.map(({item, props, key}) => <animated.a
-                    key={key}
+                {characters.map(item => <animated.a
+                    key={item}
                     className={styles.character}
                     href={`/character/${item}`}
-                    style={props}
                     data-id={item}>{item}</animated.a>)}
             </div>
             <div className={styles.pagination}>

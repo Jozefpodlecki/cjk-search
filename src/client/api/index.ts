@@ -9,9 +9,8 @@ type PageSearch<T> = {
 type SearchCriteria = {
     image?: string;
     strokes?: Position[][];
-    stroke?: Position[];
     radicals?: string[];
-    fourCode: Record<number, number>;
+    fourCode?: Record<number, number>;
     strokeCount?: number;
     page: number;
     pageSize: number;
@@ -43,6 +42,16 @@ export const getCharacters = async (criteria: SearchCriteria): Promise<string[]>
     let data;
 
     const { page, pageSize } = criteria;
+
+    if(criteria.image) {
+        data = {
+            image: criteria.image,
+            strokes: criteria. strokes,
+            strokeCount: criteria.strokeCount,
+            page,
+            pageSize
+        }
+    }
 
     if(criteria.radicals) {
         const radicals = [...criteria.radicals];

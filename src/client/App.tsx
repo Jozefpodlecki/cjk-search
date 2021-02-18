@@ -8,7 +8,7 @@ import TopNav from "components/TopNav";
 import CharacterInfo from "components/CharacterInfo";
 
 const App: FunctionComponent = () => {
-    
+
     return <div className={styles.container}>
         <TopNav/>
         <Switch>

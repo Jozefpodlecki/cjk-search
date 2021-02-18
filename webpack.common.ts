@@ -7,6 +7,8 @@ import { TsconfigPathsPlugin } from "tsconfig-paths-webpack-plugin";
 import DotenvPlugin from "webpack-dotenv-plugin";
 import { Configuration } from "webpack";
 
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+
 const config: Configuration = {
     entry: {
         app: "./src/client/index.tsx",
@@ -17,7 +19,7 @@ const config: Configuration = {
         filename: "[name].bundle.js"
     },
     resolve: {
-        extensions: [".ts", ".tsx", ".json", ".scss", ".js", "png", "svg", "jpg", "gif", "webm", "mp3"],
+        extensions: [".ts", ".tsx", ".json", ".scss", ".wasm", ".js", "png", "svg", "jpg", "gif", "webm", "mp3"],
         plugins: [
             new TsconfigPathsPlugin({
                 baseUrl: "src/client",
@@ -28,6 +30,21 @@ const config: Configuration = {
     module: {
         rules: [
             {
+                test: /worker\.js$/,
+                use: { 
+                    loader: "worker-loader"
+                },
+            },
+            {
+                test: /hanzi_lookup\.js$/,
+                use: { 
+                    loader: "file-loader",
+                    options: {
+                        name: "[path][name].[ext]",
+                    }
+                },
+            },
+            {
                 test: /\.ts(x?)$/,
                 loader: "ts-loader",
                 options: {
@@ -35,12 +52,12 @@ const config: Configuration = {
                 }
             },
             {
-                test: /\.(png|jpe?g|gif|webm|mp3)$/i,
+                test: /\.(png|jpe?g|gif|wasm|webm|mp3)$/i,
                 use: [
                     {
                         loader: "file-loader",
                         options: {
-                            
+                            name: "[path][name].[ext]",
                         }
                     },
                 ],
@@ -48,6 +65,14 @@ const config: Configuration = {
         ]
     },
     plugins: [
+        new CopyWebpackPlugin ({
+            patterns: [
+                {
+                    from: "src/hanzi_lookup.js",
+                    to: ".",
+                }
+            ]
+        }),
         new HtmlWebpackPlugin({
             // favicon: resolve(__dirname, "src/assets/images/favicon.ico"),
             template: "src/client/index.html",

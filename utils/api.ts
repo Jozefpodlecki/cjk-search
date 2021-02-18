@@ -9,7 +9,45 @@ const headers = {
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36",
 };
 
-export const getCharacterInfo = async (char: string) => {
+export const getCharacterInfoFromWikipedia = async (char: string) => {
+    const encoded = encodeURI(char);
+    const response = await axios.get(`https://en.wiktionary.org/wiki/${encoded}`, {
+        headers
+    });
+
+    const rows = Array.from($(".g-row")) as any[];
+}
+
+export const getCharacterInfoFromKanshudo = async (char: string) => {
+    const encoded = encodeURI(char);
+    const response = await axios.get(`https://www.kanshudo.com/kanji/${encoded}`, {
+        headers
+    });
+
+    const $ = cheerio.load(response.data);
+
+    const rows = Array.from($(".g-row")) as any[];
+
+    if(!rows.length) {
+        return {}
+    }
+
+    const metadata = Array.from($(".kdetails2 span")) as any[];
+    let strokeCount = undefined;
+
+    if(metadata[0].firstChild) {
+        const metadataName = metadata[0].firstChild.data;
+        if(metadataName && metadataName.includes("Stroke")) {
+            strokeCount = Number(metadata[0].next.data.trim());
+        }
+    }
+
+    return {
+        strokeCount
+    }
+}
+
+export const getCharacterInfoFromChinesepod = async (char: string) => {
     const encoded = encodeURI(char);
     const response = await axios.get(`https://www.chinesepod.com/dictionary/${encoded}`, {
         headers
@@ -30,12 +68,12 @@ export const getCharacterInfo = async (char: string) => {
 
     for(const radicalElement of radicalElements) {
         const item = radicalElement.firstChild.data;
-        radicals.push(item);
+        radicals.push(item.trim());
     }
 
     for(const meaningElement of meaningElements) {
         const item = meaningElement.firstChild.data;
-        meanings.push(item);
+        meanings.push(item.trim());
     }
 
     return {
@@ -152,6 +190,12 @@ export const getStrokeOrderGif = async (char: string) => {
 
 export const delay = (timeout: number) => new Promise((resolve,) => setTimeout(resolve, timeout));
 
+type Radical = {
+    value: string;
+    pinyin: string;
+    meaning: string;
+}
+
 export type CharacterDetail = {
     value: string;
     fourCorner?: string;
@@ -159,4 +203,6 @@ export type CharacterDetail = {
     pinyin?: string;
     checked?: boolean;
     hasStrokeOrder?: boolean;
+    radicals: Radical[]
+    strokeCount?: number;
 }
