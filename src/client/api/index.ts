@@ -78,8 +78,16 @@ export const getRadicals = async (): Promise<string[]> => {
 
 export const getCharacter = async (id: string): Promise<Character> => {
     const result = await axios.get<Character>(`/api/character/${id}`);
+    let character = result.data;
+    
+    if(character.radicals) {
+        character = {
+            ...character,
+            radicals: Array.from(new Set(character.radicals)),
+        }
+    }
 
-    return result.data;
+    return character;
 }
 
 export const getRandomCharacter = async (languageId: string): Promise<string> => {

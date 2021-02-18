@@ -8,13 +8,47 @@ import { getCharacters } from "api";
 import { useTransition, animated } from "react-spring";
 import { getHLCharacters } from "api/hanziLookup";
 
+const drawLines = (
+    context: CanvasRenderingContext2D,
+    width: number,
+    height: number) => {
+    context.strokeStyle = "grey";
+    context.lineWidth = 1;
+    context.beginPath();
+    context.moveTo(0, 0);
+    context.lineTo(width, 0);
+    context.lineTo(width,  height);
+    context.lineTo(0, height);
+    context.lineTo(0, 0);
+    context.stroke();
+    context.beginPath();
+    context.moveTo(0, 0);
+    context.lineTo(width,  height);
+    context.stroke();
+    context.beginPath();
+    context.moveTo(width, 0);
+    context.lineTo(0,  height);
+    context.stroke();
+    context.beginPath();
+    context.moveTo(width / 2, 0);
+    context.lineTo(width / 2,  height);
+    context.stroke();
+    context.beginPath();
+    context.moveTo(0,  height / 2);
+    context.lineTo(width,  height / 2);
+    context.stroke();
+    context.strokeStyle = "black";
+    context.lineWidth = 5;
+}
 
 type State = {
     isDrawing: boolean;
     strokeCount: number;
     strokes: Position[][];
     stroke: Position[];
+    result?: string;
     results: string[];
+    timestamp: number;
 }
 
 const DrawFinder: FunctionComponent = () => {
@@ -26,13 +60,17 @@ const DrawFinder: FunctionComponent = () => {
         strokeCount,
         stroke,
         strokes,
+        result,
         results,
+        timestamp,
     }, setState] = useState<State>({
         isDrawing: false,
         strokeCount: 0,
         strokes: [],
         stroke: [],
+        result: "",
         results: [],
+        timestamp: -1,
     });
 
     useEffect(() => {
@@ -49,6 +87,8 @@ const DrawFinder: FunctionComponent = () => {
         }
 
         contextRef.current = context;
+        const { width, height } = canvas;
+        drawLines(context, width, height);
 
     }, [])
 
@@ -63,11 +103,12 @@ const DrawFinder: FunctionComponent = () => {
 
         const _strokes = strokes.map(pr => pr.map(({x,y}) => [x,y]));
 
-        getHLCharacters(_strokes, 30)
-            .then(result => {
+        getHLCharacters(_strokes, 20)
+            .then(({items, item}) => {
                 setState(state=> ({
                     ...state,
-                    results: result.map(pr => pr.hanzi),
+                    result: item,
+                    results: items.map(pr => pr.hanzi),
                 }));
             })
 
@@ -90,10 +131,12 @@ const DrawFinder: FunctionComponent = () => {
         const { clientX, clientY } = event;
         const { left, top } = canvasRef.current!.getBoundingClientRect();
 
-        return {
+        const position = {
             x: clientX - left,
             y: clientY - top,
         };
+
+        return position;
     }
 
     const onMouseUp = (event: MouseEvent) => {
@@ -118,15 +161,31 @@ const DrawFinder: FunctionComponent = () => {
     }
 
     const onMouseMove = (event: MouseEvent) => {
+        const threshold = 30;
 
         if(!isDrawing) {
             return;
         }
 
+        if (new Date().getTime() - timestamp < threshold) {
+            return;
+        }
+
+        const _timestamp = new Date().getTime();
+
         const position = getPosition(event);
+        const lastStroke = stroke[stroke.length -1];
+
+        if(lastStroke.x === position.x
+            && lastStroke.y === position.y) {
+                return;
+            }
+
+        
         const _stroke = [...stroke, position];
         setState(state=> ({
             ...state,
+            timestamp: _timestamp,
             stroke: _stroke
         }));
 
@@ -154,13 +213,22 @@ const DrawFinder: FunctionComponent = () => {
             ...state,
             stroke: _stroke,
             isDrawing: true,
+            timestamp: new Date().getTime(),
         }));
 
         const context = contextRef.current!;
-        //context.fillRect(position.x, position.y, 1, 1);
         context.lineWidth = 5.0;
         context.beginPath();
         context.moveTo(position.x, position.y);
+    }
+
+    const clearCanvas = () => {
+        const canvas = canvasRef.current!;
+        const context = contextRef.current!;
+        const { width, height } = canvas;
+        context.clearRect(0, 0, width, height);
+
+        drawLines(context, width, height);
     }
 
     const onRemove = (event: MouseEvent) => {
@@ -168,14 +236,17 @@ const DrawFinder: FunctionComponent = () => {
             ...state,
             stroke: [],
             strokes: [],
+            result: "",
+            results: [],
             strokeCount: 0,
         }));
+
+        clearCanvas();
     }
 
     const onUndo = (event: MouseEvent) => {
-        const canvas = canvasRef.current!;
         const context = contextRef.current!;
-        context.clearRect(0, 0, canvas.width, canvas.height);
+        clearCanvas();
         
         const _strokes = [...strokes];
         _strokes.pop();
@@ -197,10 +268,10 @@ const DrawFinder: FunctionComponent = () => {
             ...state,
             strokes: _strokes,
             strokeCount: strokeCount - 1,
+            result: "",
+            results: [],
         }));
     }
-
-  
 
     const onDownload = (event: MouseEvent) => {
         const canvas = canvasRef.current!;
@@ -212,13 +283,15 @@ const DrawFinder: FunctionComponent = () => {
 
     return <div className={styles.container}>
         <div className={styles.canvasWrapper}>
-            <canvas width="500" height="500"
+            <canvas width="300" height="300"
                 onContextMenu={onContextMenu}
                 onMouseDown={onMouseDown}
                 onMouseUp={onMouseUp}
                 onMouseMove={onMouseMove}
                 className={styles.canvas} ref={canvasRef}/>
-            {strokeCount ? <div className={styles.actions}>
+            <div className={styles.actions}>
+            {strokeCount ? 
+            <>
                 <div className={styles.icon} onClick={onRemove}>
                     <FontAwesomeIcon icon={faTimes}/>
                 </div>
@@ -228,15 +301,22 @@ const DrawFinder: FunctionComponent = () => {
                 <div className={styles.icon} onClick={onDownload}>
                     <FontAwesomeIcon icon={faDownload}/>
                 </div>
-            </div> : null}
+            </> : null}
+            </div>
         </div>
        
-        <div className={styles.list}>
-            {results.map(pr => <animated.div
-                className={styles.item}
-                key={pr}>
-                {pr}
-            </animated.div>)}
+        <div className={styles.result}>
+            {results.length ? <>
+                <a  href={`/character/${result}`} className={styles.bestMatch}>{result}</a>
+                <div className={styles.results}>
+                    {results.map(pr => <animated.a
+                        className={styles.item}
+                        href={`/character/${pr}`}
+                        key={pr}>
+                        {pr}
+                    </animated.a>)}
+                </div>
+            </> : null}
         </div>
     </div>;
 }

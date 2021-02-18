@@ -30,8 +30,6 @@ export class Controller {
     getCharacter(@Param('id') id: string) {
         const character = _characters.find(pr => pr.value === id);
 
-        console.log(character);
-
         return character;
     }
 

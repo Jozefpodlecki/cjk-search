@@ -9,17 +9,19 @@ type RouteParam = {
     id: string;
 }
 
+// {
+//     value: string;
+//     pinyin: string;
+//     meaning: string;
+// }[] | 
+
 type State = {
     isLoading: boolean;
     showStrokeOrder: boolean;
     hasStrokeOrder: boolean;
     value: string;
     meanings: string[];
-    radicals: {
-        value: string;
-        pinyin: string;
-        meaning: string;
-    }[],
+    radicals: string[];
 }
 
 const CharacterInfo: FunctionComponent = () => {
@@ -63,15 +65,17 @@ const CharacterInfo: FunctionComponent = () => {
     return <div className={styles.container}>
         <div>
             {showStrokeOrder ? <div className={styles.imageWrapper}>
-                <img className={styles.image} src={imageSrc}/>
-            </div> : <div>
-                <div className={styles.text}>{value}</div>
-            </div>}
-            <div>
+                    <img className={styles.image} src={imageSrc}/>
+                </div> : <div>
+                    <div className={styles.text}>{value}</div>
+                </div>}
+            <div className={styles.topPanel}>
                 {hasStrokeOrder ? <div className={styles.iconButton} onClick={onStrokeShow}>
                     <FontAwesomeIcon icon={faPencilAlt}/>
                 </div> : null}
             </div>
+        </div>
+        <div className={styles.details}>
             {meanings.length ? <>
                 <div className={styles.header}>Meanings</div>
                 <div className={styles.list}>
@@ -82,12 +86,8 @@ const CharacterInfo: FunctionComponent = () => {
             </> : null}
             {radicals.length ? <>
             <div className={styles.header}>Radicals</div>
-            <div>
-                {radicals.map(pr => <div className={styles.radical} key={pr.value}>
-                    <div className={styles.radicalValue}>{pr.value}</div>
-                    <div>{pr.pinyin}</div>
-                    <div>{pr.meaning}</div>
-                </div>)}
+            <div className={styles.radicalsList}>
+                {radicals.map(pr => <div className={styles.radical} key={pr}>{pr}</div>)}
             </div>
             </> : null}
         </div>

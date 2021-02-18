@@ -1,8 +1,16 @@
 .container {
     flex: 1;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+}
+
+.details {
+    padding: 0 10px;
+}
+
+.topPanel {
+    display: flex;
+    padding: 0 10px;
 }
 
 .text {
@@ -23,15 +31,23 @@
     cursor: pointer;
 }
 
+.meaning {
+    font-size: 30px;
+}
+
 .header {
     margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.radicalsList {
+    display: flex;
 }
 
 .radical {
-    padding: 10px;
+    padding: 0 10px;
     text-align: center;
-}
-
-.radicalValue {
     font-size: 40px;
 }

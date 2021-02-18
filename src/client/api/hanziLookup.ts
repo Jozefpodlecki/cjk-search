@@ -13,7 +13,12 @@ type Item = {
     score: number;
 }
 
-export const getHLCharacters = (strokes: any, limit: number) => new Promise<Item[]>((resolve, reject) => {
+type Result = {
+    item?: string;
+    items: Item[];
+}
+
+export const getHLCharacters = (strokes: any, limit: number) => new Promise<Result>((resolve, reject) => {
     worker.postMessage({ strokes, limit });
 
     handle = resolve;
@@ -30,7 +35,12 @@ function onWorkerMessage({data}: MessageEvent) {
     }
 
     if(handle) {
-        handle(data.matches);
+        const items = data.matches;
+
+        handle({
+            item: items[0]?.hanzi,
+            items,
+        });
         handle = null;
     }
 }
