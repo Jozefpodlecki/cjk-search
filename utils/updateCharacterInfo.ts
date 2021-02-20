@@ -36,8 +36,8 @@ const getFourCornerInfo = async () => {
     const fourCornerList = await getFourCornerInfo();
     
     let index = 0;
-    const start = 2351;
-    const limit = 3000;
+    const start = 10000;
+    const limit = 12000;
 
     for(const record of list) {
 
